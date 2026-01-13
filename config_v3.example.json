@@ -1,0 +1,97 @@
+{
+  "global_settings": {
+    "provider": "qiniu",
+    "active_profile": "english_sentences",
+    "input_file": "input.txt",
+    "output_file": "anki_cards.txt",
+    "cache_file": "progress_cache.csv",
+    "log_file": "anki_process.log",
+    "request_delay": 1.0,
+    "max_retries": 3,
+    "save_interval": 10,
+    "input_encoding": "utf-8",
+    "output_encoding": "utf-8"
+  },
+  "providers": {
+    "gemini": {
+      "api_key": "你的_GOOGLE_API_KEY",
+      "model": "gemini-pro"
+    },
+    "qiniu": {
+      "api_key": "你的七牛云_API_KEY",
+      "base_url": "https://api.qnaigc.com/v1",
+      "model": "deepseek-v3"
+    }
+  },
+  "profiles": {
+    "english_sentences": {
+      "description": "英语句子翻译和背景信息",
+      "system_prompt": "You are a language learning assistant. Provide accurate translations and context.",
+      "user_prompt_template": "Analyze this sentence: \"{front_text}\"\n\nPlease complete the following tasks and return in strict JSON format:\n1. translate: Provide an authentic Chinese translation.\n2. meta_info: Speculate or find the author, source (book/movie name) and brief background. If completely unverifiable, explain the context based on the sentence content through \"AI analysis\".\n\nOutput format example:\n{{\n    \"translate\": \"这是中文翻译。\",\n    \"meta_info\": \"Author: XXX <br> Source: \"XXX\" <br> Background: This sentence is usually used for...\"\n}}\nNote: Use <br> tags for line breaks in meta_info, as this is for importing into Anki.",
+      "output_fields": ["translate", "meta_info"],
+      "anki_fields": ["Front", "Back", "Note"],
+      "field_mapping": {
+        "front_text": "Front",
+        "translate": "Back",
+        "meta_info": "Note"
+      }
+    },
+    "ancient_chinese": {
+      "description": "古文学习模式",
+      "system_prompt": "你是一个古汉语专家，擅长解释古文的含义、出处和历史背景。",
+      "user_prompt_template": "请分析这句古文：\"{front_text}\"\n\n请完成以下任务并以严格的 JSON 格式返回：\n1. translation: 提供现代文翻译。\n2. source: 推测或查找该句子的出处（书名/文章名/作者）。\n3. background: 解释这句话的历史背景、文化含义或典故。\n\n输出格式示例：\n{{\n    \"translation\": \"这是现代文翻译。\",\n    \"source\": \"《论语·学而》\",\n    \"background\": \"这句话体现了孔子关于...的思想...\"\n}}",
+      "output_fields": ["translation", "source", "background"],
+      "anki_fields": ["Front", "Translation", "Source", "Background"],
+      "field_mapping": {
+        "front_text": "Front",
+        "translation": "Translation",
+        "source": "Source",
+        "background": "Background"
+      }
+    },
+    "english_vocab": {
+      "description": "英语词汇学习（雅思/托福）",
+      "system_prompt": "You are an expert English vocabulary teacher specializing in IELTS and TOEFL preparation.",
+      "user_prompt_template": "Analyze this English word: \"{front_text}\"\n\nPlease complete the following tasks and return in strict JSON format:\n1. definition: Provide clear English definition.\n2. pronunciation: Include IPA phonetic symbols.\n3. example_sentence: Provide a practical example sentence showing usage.\n4. synonyms: List 2-3 synonyms with similar meanings.\n5. word_family: List related words (different forms of the word).\n\nOutput format example:\n{{\n    \"definition\": \"A precise explanation of the word's meaning.\",\n    \"pronunciation\": \"/wɜːrd/\",\n    \"example_sentence\": \"This is an example showing how to use the word in context.\",\n    \"synonyms\": \"synonym1, synonym2, synonym3\",\n    \"word_family\": \"noun, verb, adjective, adverb forms\"\n}}",
+      "output_fields": ["definition", "pronunciation", "example_sentence", "synonyms", "word_family"],
+      "anki_fields": ["Word", "Definition", "Pronunciation", "Example", "Synonyms", "Word Family"],
+      "field_mapping": {
+        "front_text": "Word",
+        "definition": "Definition",
+        "pronunciation": "Pronunciation",
+        "example_sentence": "Example",
+        "synonyms": "Synonyms",
+        "word_family": "Word Family"
+      }
+    },
+    "programming": {
+      "description": "编程代码学习",
+      "system_prompt": "You are a programming expert and code reviewer.",
+      "user_prompt_template": "Analyze this code snippet: \"{front_text}\"\n\nPlease complete the following tasks and return in strict JSON format:\n1. explanation: Explain what this code does in simple terms.\n2. time_complexity: Analyze the time complexity (e.g., O(n), O(n^2), O(log n)).\n3. space_complexity: Analyze the space complexity.\n4. usage: Describe common use cases and scenarios.\n5. improvements: Suggest potential improvements if any.\n\nOutput format example:\n{{\n    \"explanation\": \"This code implements...\",\n    \"time_complexity\": \"O(n) because...\",\n    \"space_complexity\": \"O(1) as it uses...\",\n    \"usage\": \"Commonly used for...\",\n    \"improvements\": \"Could be optimized by...\"\n}}",
+      "output_fields": ["explanation", "time_complexity", "space_complexity", "usage", "improvements"],
+      "anki_fields": ["Code", "Explanation", "Time", "Space", "Usage", "Improvements"],
+      "field_mapping": {
+        "front_text": "Code",
+        "explanation": "Explanation",
+        "time_complexity": "Time",
+        "space_complexity": "Space",
+        "usage": "Usage",
+        "improvements": "Improvements"
+      }
+    },
+    "law": {
+      "description": "法律条文学习",
+      "system_prompt": "你是一个法律专家，擅长解释法律条文的含义和应用。",
+      "user_prompt_template": "请分析这条法律条文：\"{front_text}\"\n\n请完成以下任务并以严格的 JSON 格式返回：\n1. interpretation: 用通俗语言解释这条法律的含义。\n2. application: 说明这条法律的适用场景和对象。\n3. related_cases: 提供相关的案例或实际应用例子。\n4. key_points: 列出这条法律的关键要点。\n\n输出格式示例：\n{{\n    \"interpretation\": \"这条法律的意思是...\",\n    \"application\": \"适用于...的情况\",\n    \"related_cases\": \"例如在...案件中\",\n    \"key_points\": \"要点1、要点2、要点3\"\n}}",
+      "output_fields": ["interpretation", "application", "related_cases", "key_points"],
+      "anki_fields": ["Article", "Interpretation", "Application", "Cases", "Key Points"],
+      "field_mapping": {
+        "front_text": "Article",
+        "interpretation": "Interpretation",
+        "application": "Application",
+        "related_cases": "Cases",
+        "key_points": "Key Points"
+      }
+    }
+  }
+}

@@ -22,6 +22,7 @@ progress_cache.csv
 # Anki 导出文件
 anki_cards.txt
 anki_import_ready.txt
+test_*.txt
 
 # IDE
 .vscode/
