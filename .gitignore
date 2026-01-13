@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# 敏感配置文件
+config.json
+.env
+
+# 日志文件
+*.log
+
+# 缓存和进度文件
+progress_cache.csv
+*.cache
+
+# Anki 导出文件
+anki_cards.txt
+anki_import_ready.txt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db

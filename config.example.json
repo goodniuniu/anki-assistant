@@ -1,0 +1,10 @@
+{
+  "api_key": "你的_GOOGLE_API_KEY",
+  "model": "gemini-pro",
+  "request_delay": 1.0,
+  "max_retries": 3,
+  "save_interval": 10,
+  "output_filename": "anki_cards.txt",
+  "cache_filename": "progress_cache.csv",
+  "log_file": "anki_process.log"
+}
