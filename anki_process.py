@@ -4,6 +4,7 @@ import os
 import time
 import json
 import logging
+import argparse
 from pathlib import Path
 from tqdm import tqdm
 import re
@@ -316,11 +317,92 @@ def export_to_anki(df, filename):
     print("="*50)
 
 # ================= 主程序 =================
+def parse_arguments():
+    """解析命令行参数"""
+    parser = argparse.ArgumentParser(
+        description='Anki 卡片自动生成工具 - 使用 AI 生成翻译和背景信息',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+使用示例:
+  # 从文件生成卡片
+  python anki_process.py -i input.txt
+
+  # 指定输出文件名
+  python anki_process.py -i input.txt -o my_cards.txt
+
+  # 使用不同的配置文件
+  python anki_process.py -i input.txt -c custom_config.json
+
+  # 使用内嵌示例数据
+  python anki_process.py --demo
+
+  # 清除缓存重新生成
+  python anki_process.py -i input.txt --clear-cache
+        """
+    )
+
+    parser.add_argument(
+        '-i', '--input',
+        type=str,
+        help='输入文件路径 (支持 .txt, .csv, .xlsx)'
+    )
+
+    parser.add_argument(
+        '-o', '--output',
+        type=str,
+        help='输出文件名 (默认: anki_cards.txt)'
+    )
+
+    parser.add_argument(
+        '-c', '--config',
+        type=str,
+        default='config.json',
+        help='配置文件路径 (默认: config.json)'
+    )
+
+    parser.add_argument(
+        '--provider',
+        type=str,
+        choices=['gemini', 'qiniu'],
+        help='强制指定 AI 服务商 (覆盖配置文件)'
+    )
+
+    parser.add_argument(
+        '--demo',
+        action='store_true',
+        help='使用内置的示例数据运行'
+    )
+
+    parser.add_argument(
+        '--clear-cache',
+        action='store_true',
+        help='清除缓存文件，重新生成所有内容'
+    )
+
+    parser.add_argument(
+        '--no-cache',
+        action='store_true',
+        help='禁用缓存功能'
+    )
+
+    return parser.parse_args()
+
 def main():
     """主程序入口"""
+    # 解析命令行参数
+    args = parse_arguments()
+
     try:
         # 1. 加载配置
-        config = load_config()
+        config = load_config(args.config)
+
+        # 命令行参数覆盖配置文件
+        if args.provider:
+            config['provider'] = args.provider
+        if args.output:
+            config['output_filename'] = args.output
+        if args.no_cache:
+            config['save_interval'] = float('inf')  # 设置为无限大，禁用缓存保存
 
         # 2. 设置日志
         logger = setup_logging(config.get('log_file', 'anki_process.log'))
@@ -329,31 +411,51 @@ def main():
         logger.info(f"AI 服务商: {config.get('provider', 'gemini')}")
         logger.info("="*50)
 
-        # 3. 准备数据（支持多种输入源）
-        # 方式1: 从列表
-        raw_data = [
-            "To be, or not to be, that is the question.",
-            "Stay hungry, stay foolish.",
-            "It was the best of times, it was the worst of times.",
-            "I'm gonna make him an offer he can't refuse."
-        ]
+        # 3. 清除缓存（如果指定）
+        cache_file = config.get('cache_filename', 'progress_cache.csv')
+        if args.clear_cache and Path(cache_file).exists():
+            logger.info(f"清除缓存文件: {cache_file}")
+            os.remove(cache_file)
 
-        # 方式2: 从文件（取消注释使用）
-        # raw_data = "input.txt"  # 支持 .txt, .csv, .xlsx
+        # 4. 准备数据
+        if args.demo:
+            # 使用示例数据
+            logger.info("使用内置示例数据")
+            raw_data = [
+                "To be, or not to be, that is the question.",
+                "Stay hungry, stay foolish.",
+                "It was the best of times, it was the worst of times.",
+                "I'm gonna make him an offer he can't refuse."
+            ]
+        elif args.input:
+            # 从文件读取
+            input_file = args.input
+            if not Path(input_file).exists():
+                raise FileNotFoundError(f"输入文件不存在: {input_file}")
+            logger.info(f"从文件读取数据: {input_file}")
+            raw_data = input_file
+        else:
+            # 没有指定输入，显示帮助信息
+            print("错误: 必须指定输入文件或使用 --demo 选项")
+            print("\n使用 --help 查看帮助信息")
+            print("\n快速开始:")
+            print("  python anki_process.py --demo          # 使用示例数据")
+            print("  python anki_process.py -i input.txt    # 从文件生成")
+            return 1
 
         logger.info("开始准备数据...")
         df = prepare_data(raw_data)
         logger.info(f"数据准备完成，共 {len(df)} 条")
 
-        # 4. AI 补充
+        # 5. AI 补充
         logger.info("开始 AI 信息补充...")
         df_enriched = enrich_data_with_llm(df, config, logger)
 
-        # 5. 打印预览
+        # 6. 打印预览
         print("\n--- 数据预览（前3条）---")
         print(df_enriched.head(3).to_string())
 
-        # 6. 导出
+        # 7. 导出
         output_file = config.get('output_filename', 'anki_cards.txt')
         export_to_anki(df_enriched, output_file)
 
@@ -361,10 +463,18 @@ def main():
         logger.info("程序执行完成！")
         logger.info("="*50)
 
+        return 0
+
+    except FileNotFoundError as e:
+        logging.getLogger(__name__).error(f"文件未找到: {e}")
+        print(f"\n[错误] 文件未找到: {e}")
+        return 1
     except Exception as e:
         logging.getLogger(__name__).error(f"程序执行失败: {e}")
-        print(f"\n❌ 程序执行失败: {e}")
-        raise
+        print(f"\n[错误] 程序执行失败: {e}")
+        import traceback
+        traceback.print_exc()
+        return 1
 
 if __name__ == "__main__":
-    main()
+    exit(main())
