@@ -7,6 +7,80 @@ import logging
 from pathlib import Path
 from tqdm import tqdm
 import re
+from typing import Dict, Optional
+
+# ================= AI 服务商接口 =================
+class AIProvider:
+    """AI 服务商基类"""
+
+    def __init__(self, config: Dict):
+        self.config = config
+        self.logger = logging.getLogger(__name__)
+
+    def generate_content(self, prompt: str) -> str:
+        """生成内容，子类必须实现"""
+        raise NotImplementedError
+
+class GeminiProvider(AIProvider):
+    """Google Gemini 服务商"""
+
+    def __init__(self, config: Dict):
+        super().__init__(config)
+        os.environ["GOOGLE_API_KEY"] = config["api_key"]
+        genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
+        self.model = genai.GenerativeModel(config['model'])
+        self.logger.info(f"✅ 已初始化 Gemini 模型: {config['model']}")
+
+    def generate_content(self, prompt: str) -> str:
+        """使用 Gemini 生成内容"""
+        response = self.model.generate_content(prompt)
+        return response.text
+
+class QiniuProvider(AIProvider):
+    """七牛云 AI 服务商（DeepSeek）"""
+
+    def __init__(self, config: Dict):
+        super().__init__(config)
+        try:
+            from openai import OpenAI
+            self.client = OpenAI(
+                base_url=config["base_url"],
+                api_key=config["api_key"]
+            )
+            self.model = config['model']
+            self.logger.info(f"✅ 已初始化七牛云 AI 模型: {config['model']}")
+        except ImportError:
+            raise ImportError("请安装 openai 库: pip install openai")
+
+    def generate_content(self, prompt: str) -> str:
+        """使用七牛云 AI 生成内容"""
+        messages = [{"role": "user", "content": prompt}]
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=messages,
+            stream=False,
+            max_tokens=4096
+        )
+        return response.choices[0].message.content
+
+def create_ai_provider(config: Dict) -> AIProvider:
+    """
+    工厂方法：根据配置创建对应的 AI 服务商实例
+    """
+    provider_name = config.get("provider", "gemini").lower()
+
+    if provider_name == "gemini":
+        if "gemini" not in config:
+            raise ValueError("配置中缺少 gemini 配置项")
+        return GeminiProvider(config["gemini"])
+
+    elif provider_name in ["qiniu", "deepseek"]:
+        if "qiniu" not in config:
+            raise ValueError("配置中缺少 qiniu 配置项")
+        return QiniuProvider(config["qiniu"])
+
+    else:
+        raise ValueError(f"不支持的服务商: {provider_name}，请选择 'gemini' 或 'qiniu'")
 
 # ================= 配置加载 =================
 def load_config(config_file='config.json'):
@@ -96,18 +170,18 @@ def clean_json_response(response_text):
     clean_text = re.sub(r'/\*.*?\*/', '', clean_text, flags=re.DOTALL)
     return clean_text
 
-def call_gemini_with_retry(model, prompt, max_retries=3, delay=2):
+def call_ai_with_retry(ai_provider: AIProvider, prompt: str, max_retries: int = 3, delay: float = 2):
     """
-    带重试机制的 Gemini API 调用
+    带重试机制的 AI 调用
     """
     logger = logging.getLogger(__name__)
 
     for attempt in range(max_retries):
         try:
-            response = model.generate_content(prompt)
-            return response.text
+            response_text = ai_provider.generate_content(prompt)
+            return response_text
         except Exception as e:
-            logger.warning(f"API 调用失败（尝试 {attempt + 1}/{max_retries}）: {e}")
+            logger.warning(f"AI 调用失败（尝试 {attempt + 1}/{max_retries}）: {e}")
             if attempt < max_retries - 1:
                 time.sleep(delay * (attempt + 1))  # 指数退避
             else:
@@ -118,10 +192,14 @@ def enrich_data_with_llm(df, config, logger):
     遍历 DataFrame，让大模型为每一行补充信息
     支持断点续传
     """
-    # 初始化 Gemini
-    os.environ["GOOGLE_API_KEY"] = config["api_key"]
-    genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
-    model = genai.GenerativeModel(config['model'])
+    # 创建 AI 服务商实例
+    try:
+        ai_provider = create_ai_provider(config)
+        provider_name = config.get("provider", "gemini")
+        logger.info(f"使用 AI 服务商: {provider_name}")
+    except Exception as e:
+        logger.error(f"初始化 AI 服务商失败: {e}")
+        raise
 
     # 检查是否有缓存
     cache_file = config.get('cache_filename', 'progress_cache.csv')
@@ -166,8 +244,8 @@ def enrich_data_with_llm(df, config, logger):
 
         try:
             # 1. 生成内容
-            response_text = call_gemini_with_retry(
-                model,
+            response_text = call_ai_with_retry(
+                ai_provider,
                 prompt_template.format(sentence=sentence),
                 max_retries=max_retries
             )
@@ -248,6 +326,7 @@ def main():
         logger = setup_logging(config.get('log_file', 'anki_process.log'))
         logger.info("="*50)
         logger.info("Anki 卡片生成程序启动")
+        logger.info(f"AI 服务商: {config.get('provider', 'gemini')}")
         logger.info("="*50)
 
         # 3. 准备数据（支持多种输入源）

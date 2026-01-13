@@ -1,9 +1,10 @@
 # Anki 卡片自动生成工具
 
-基于 Google Gemini AI 的 Anki 记忆卡片自动生成工具，可以为句子自动生成中文翻译和背景信息。
+基于 AI 的 Anki 记忆卡片自动生成工具，支持多个 AI 服务商，可以为句子自动生成中文翻译和背景信息。
 
 ## 功能特性
 
+- **多服务商支持**：Google Gemini、七牛云 AI (DeepSeek)
 - 自动生成中文翻译
 - 智能推测句子出处、作者和背景
 - 支持断点续传（中断后可继续）
@@ -14,8 +15,26 @@
 
 ## 安装依赖
 
+### 基础依赖（必需）
 ```bash
-pip install pandas google-generativeai tqdm openpyxl
+pip install pandas tqdm openpyxl
+```
+
+### 服务商依赖（根据需要选择）
+
+**使用 Google Gemini：**
+```bash
+pip install google-generativeai
+```
+
+**使用七牛云 AI (DeepSeek)：**
+```bash
+pip install openai
+```
+
+**安装所有依赖（推荐）：**
+```bash
+pip install pandas google-generativeai openai tqdm openpyxl
 ```
 
 ## 快速开始
@@ -27,11 +46,21 @@ pip install pandas google-generativeai tqdm openpyxl
 copy config.example.json config.json
 ```
 
-编辑 `config.json`，填入你的 Google API KEY：
+编辑 `config.json`，选择你要使用的 AI 服务商：
+
+#### 方式1：使用 Google Gemini
 ```json
 {
-  "api_key": "你的实际_API_KEY",
-  "model": "gemini-pro",
+  "provider": "gemini",
+  "gemini": {
+    "api_key": "你的_GOOGLE_API_KEY",
+    "model": "gemini-pro"
+  },
+  "qiniu": {
+    "api_key": "你的七牛云_API_KEY",
+    "base_url": "https://api.qnaigc.com/v1",
+    "model": "deepseek-v3"
+  },
   "request_delay": 1.0,
   "max_retries": 3,
   "save_interval": 10,
@@ -40,8 +69,30 @@ copy config.example.json config.json
   "log_file": "anki_process.log"
 }
 ```
-
 获取 Google API KEY：https://makersuite.google.com/app/apikey
+
+#### 方式2：使用七牛云 AI (DeepSeek)
+```json
+{
+  "provider": "qiniu",
+  "gemini": {
+    "api_key": "你的_GOOGLE_API_KEY",
+    "model": "gemini-pro"
+  },
+  "qiniu": {
+    "api_key": "你的七牛云_API_KEY",
+    "base_url": "https://api.qnaigc.com/v1",
+    "model": "deepseek-v3"
+  },
+  "request_delay": 1.0,
+  "max_retries": 3,
+  "save_interval": 10,
+  "output_filename": "anki_cards.txt",
+  "cache_filename": "progress_cache.csv",
+  "log_file": "anki_process.log"
+}
+```
+获取七牛云 API KEY：访问七牛云官网获取
 
 ### 2. 准备输入数据
 
@@ -82,10 +133,27 @@ python anki_process.py
 
 ## 配置说明
 
+### 服务商选择
+| 参数 | 说明 | 可选值 |
+|------|------|--------|
+| `provider` | AI 服务商 | `gemini`、`qiniu` |
+
+### Google Gemini 配置
 | 参数 | 说明 | 默认值 |
 |------|------|--------|
-| `api_key` | Google API KEY | 必填 |
-| `model` | Gemini 模型名称 | `gemini-pro` |
+| `gemini.api_key` | Google API KEY | 必填 |
+| `gemini.model` | Gemini 模型名称 | `gemini-pro` |
+
+### 七牛云 AI 配置
+| 参数 | 说明 | 默认值 |
+|------|------|--------|
+| `qiniu.api_key` | 七牛云 API KEY | 必填 |
+| `qiniu.base_url` | API 地址 | `https://api.qnaigc.com/v1` |
+| `qiniu.model` | 模型名称 | `deepseek-v3` |
+
+### 通用配置
+| 参数 | 说明 | 默认值 |
+|------|------|--------|
 | `request_delay` | API 请求间隔（秒） | `1.0` |
 | `max_retries` | 失败重试次数 | `3` |
 | `save_interval` | 进度保存间隔（条数） | `10` |
@@ -137,8 +205,21 @@ To be, or not to be, that is the question.	生存还是毁灭，这是一个问�
 
 ## 常见问题
 
+### Q: 如何选择 AI 服务商？
+A:
+- **Google Gemini**：适合一般用途，有免费配额，翻译质量较好
+- **七牛云 AI (DeepSeek)**：适合对中文理解要求更高的场景，API 可能收费不同
+
+在 `config.json` 中修改 `provider` 字段：
+```json
+{"provider": "gemini"}  // 或 "qiniu"
+```
+
 ### Q: 如何获取 Google API KEY？
 A: 访问 https://makersuite.google.com/app/apikey 创建 API KEY
+
+### Q: 如何获取七牛云 API KEY？
+A: 访问七牛云官网（https://www.qiniu.com）注册并获取 AI 服务 API KEY
 
 ### Q: 程序中断了怎么办？
 A: 重新运行即可，程序会自动从断点继续
@@ -154,6 +235,9 @@ A: 确保 Anki 导入时选择了 UTF-8 编码
 
 ### Q: 某些句子翻译不准确？
 A: 查看日志文件定位问题句子，手动修改 `anki_cards.txt` 或直接在 Anki 中编辑
+
+### Q: 切换服务商后需要清除缓存吗？
+A: 不需要，缓存会自动识别。但如果想要全部重新处理，删除 `progress_cache.csv` 文件即可
 
 ## 项目结构
 
@@ -172,7 +256,13 @@ anki-assistant/
 
 ## 更新日志
 
-### v2.0 (当前版本)
+### v2.1 (当前版本) - 多服务商支持
+- 新增多 AI 服务商支持（Google Gemini、七牛云 AI/DeepSeek）
+- 重构代码架构，使用统一的 AI 服务商接口
+- 更新配置文件结构，支持同时配置多个服务商
+- 改进依赖安装说明，按需安装服务商库
+
+### v2.0
 - 添加配置文件系统
 - 实现断点续传功能
 - 完善错误处理和重试机制

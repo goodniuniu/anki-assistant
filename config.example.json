@@ -1,6 +1,14 @@
 {
-  "api_key": "你的_GOOGLE_API_KEY",
-  "model": "gemini-pro",
+  "provider": "gemini",
+  "gemini": {
+    "api_key": "你的_GOOGLE_API_KEY",
+    "model": "gemini-pro"
+  },
+  "qiniu": {
+    "api_key": "你的七牛云_API_KEY",
+    "base_url": "https://api.qnaigc.com/v1",
+    "model": "deepseek-v3"
+  },
   "request_delay": 1.0,
   "max_retries": 3,
   "save_interval": 10,
