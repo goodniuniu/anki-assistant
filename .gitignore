@@ -7,29 +7,84 @@ __pycache__/
 venv/
 env/
 ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
 # 敏感配置文件
-config.json
+config/config.json
 .env
+.env.local
+*.key
+secrets.json
 
 # 日志文件
 *.log
+logs/*.log
 
 # 缓存和进度文件
 progress_cache.csv
+logs/progress_cache.csv
 *.cache
+.cache/
+
+# 测试输出
+tests/test_output/*.txt
+test_output.txt
 
 # Anki 导出文件
 anki_cards.txt
 anki_import_ready.txt
 test_*.txt
 
+# 数据文件（保留示例）
+data/input/raw/*
+data/input/extracted_120/*
+data/cleaned/*
+data/output/*
+!data/input/raw/*.example
+!data/cleaned/*.example
+!data/output/*.example
+
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
+.project
+.pydevproject
+.settings/
 
 # 系统文件
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+desktop.ini
+
+# 临时文件
+*.tmp
+*.bak
+*.swp
+*~.nib
+*.bak
+
+# Claude Code
+.claude/
+

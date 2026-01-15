@@ -1,0 +1,81 @@
+{
+  "global_settings": {
+    "provider": "qiniu",
+    "active_profile": "vocabulary_enhancement",
+    "input_file": "input.txt",
+    "output_file": "anki_enhanced.txt",
+    "cache_file": "progress_cache.csv",
+    "log_file": "anki_process.log",
+    "request_delay": 1.0,
+    "max_retries": 3,
+    "save_interval": 10,
+    "input_encoding": "utf-8",
+    "output_encoding": "utf-8"
+  },
+  "providers": {
+    "gemini": {
+      "api_key": "你的_GOOGLE_API_KEY",
+      "model": "gemini-pro"
+    },
+    "qiniu": {
+      "api_key": "你的七牛云_API_KEY",
+      "base_url": "https://api.qnaigc.com/v1",
+      "model": "deepseek-v3"
+    }
+  },
+  "profiles": {
+    "vocabulary_enhancement": {
+      "description": "词汇笔记增强 - 补充释义、例句、词源等",
+      "system_prompt": "你是一个专业的语言学习助手。你的任务是阅读用户已有的笔记，然后补充、完善、扩展背面的内容，让记忆卡片更加丰富和有用。",
+      "user_prompt_template": "请阅读并增强以下词汇学习卡片：\n\n【正面 (Front)】:\n{front_text}\n\n【背面原始内容 (Back Original)】:\n{back_text}\n\n请基于背面的原始内容，进行补充和增强。返回增强后的完整背面内容，保持原有的关键信息，并添加以下内容（如果缺失）：\n1. 如果缺少释义，补充准确的释义\n2. 如果缺少例句，添加实用的例句\n3. 补充词源、词根词缀、同义词、反义词等\n4. 添加记忆技巧或使用场景\n\n请直接输出增强后的完整背面内容（纯文本，不要JSON，不要markdown代码块），保持结构清晰，使用适当的换行和标点。",
+      "output_format": "text",
+      "input_fields": ["front_text", "back_text"],
+      "output_fields": ["front_text", "enhanced_back"]
+    },
+
+    "sentence_translation": {
+      "description": "句子翻译增强 - 添加背景、文化解读等",
+      "system_prompt": "你是一个跨文化语言专家。你的任务是增强句子翻译卡片，让学习者不仅理解字面意思，还能了解文化背景。",
+      "user_prompt_template": "请阅读并增强以下句子学习卡片：\n\n【正面 (Front)】:\n{front_text}\n\n【背面原始内容 (Back Original)】:\n{back_text}\n\n请基于背面的原始内容进行增强。输出格式要求：\n\n【翻译】\n（保持原有的翻译，如果没有则提供准确翻译）\n\n【背景与解读】\n（补充句子背景：作者、出处、文化含义、使用场景等）\n\n【记忆要点】\n（提取关键语法点、词汇亮点、使用技巧等）\n\n请直接输出增强后的完整背面内容（纯文本，不要JSON，不要markdown代码块），使用清晰的分段和标题。",
+      "output_format": "text",
+      "input_fields": ["front_text", "back_text"],
+      "output_fields": ["front_text", "enhanced_back"]
+    },
+
+    "code_explanation": {
+      "description": "代码理解增强 - 添加详细解释、使用场景、优化建议",
+      "system_prompt": "你是一个经验丰富的编程导师。你的任务是让代码注释和解释更加详细、易懂，帮助学习者深入理解。",
+      "user_prompt_template": "请阅读并增强以下代码学习卡片：\n\n【正面 (Front)】:\n{front_text}\n\n【背面原始内容 (Back Original)】:\n{back_text}\n\n请基于背面的原始内容进行增强。输出格式要求：\n\n【代码说明】\n（用通俗语言解释这段代码的功能，保持原有解释并补充细节）\n\n【关键概念】\n（解释代码中的关键技术点、算法思想、设计模式等）\n\n【复杂度分析】\n（时间复杂度、空间复杂度，如果未提及）\n\n【使用场景】\n（这段代码在实际项目中的应用场景）\n\n【改进建议】\n（代码优化技巧、最佳实践、常见错误等）\n\n【相关代码】\n（推荐延伸阅读：相关算法、变体实现等）\n\n请直接输出增强后的完整背面内容（纯文本，不要JSON，不要markdown代码块），使用清晰的分段和标题。",
+      "output_format": "text",
+      "input_fields": ["front_text", "back_text"],
+      "output_fields": ["front_text", "enhanced_back"]
+    },
+
+    "ancient_text_explanation": {
+      "description": "古文理解增强 - 添加注释、翻译、历史背景",
+      "system_prompt": "你是一位博学的古汉语专家和历史学家。你的任务是为古文学习卡片添加详细的注释、背景和现代解读。",
+      "user_prompt_template": "请阅读并增强以下古文学习卡片：\n\n【正面 (Front)】:\n{front_text}\n\n【背面原始内容 (Back Original)】:\n{back_text}\n\n请基于背面的原始内容进行增强。输出格式要求：\n\n【原文】\n（保持原古文）\n\n【现代翻译】\n（提供准确、通顺的现代汉语翻译）\n\n【注释】\n（逐词注释：重点词汇、特殊语法）\n\n【出处】\n（作品名称、作者、朝代、篇目等）\n\n【背景解读】\n（历史背景、文化内涵、思想意义、典故等）\n\n【记忆提示】\n（记忆技巧、相关名句、延伸思考）\n\n请直接输出增强后的完整背面内容（纯文本，不要JSON，不要markdown代码块），保持结构清晰。",
+      "output_format": "text",
+      "input_fields": ["front_text", "back_text"],
+      "output_fields": ["front_text", "enhanced_back"]
+    },
+
+    "concept_deepening": {
+      "description": "概念理解深化 - 添加定义、例子、对比、应用",
+      "system_prompt": "你是一个知识渊博的教育专家。你的任务是将简略的概念笔记转化为深度学习材料。",
+      "user_prompt_template": "请阅读并增强以下概念学习卡片：\n\n【正面 (Front)】:\n{front_text}\n\n【背面原始内容 (Back Original)】:\n{back_text}\n\n请基于背面的原始内容进行深化和扩展。输出格式要求：\n\n【定义】\n（简洁明确的定义，保持或改进原有定义）\n\n【核心要点】\n（分条列出3-5个关键点，使用简洁的项目符号）\n\n【解释与说明】\n（详细解释概念含义，帮助深入理解）\n\n【具体例子】\n（提供2-3个具体、生动的例子）\n\n【对比区分】\n（与相似概念对比，澄清易混淆点）\n\n【实际应用】\n（在现实生活/工作中的应用场景）\n\n【延伸思考】\n（启发性的思考题或讨论题）\n\n请直接输出增强后的完整背面内容（纯文本，不要JSON，不要markdown代码块），使用清晰的结构。",
+      "output_format": "text",
+      "input_fields": ["front_text", "back_text"],
+      "output_fields": ["front_text", "enhanced_back"]
+    },
+
+    "qa_enhancement": {
+      "description": "问答卡片增强 - 扩展答案、添加解析、补充相关知识",
+      "system_prompt": "你是一个耐心的导师。你的任务是让简短的答案变得详细、易懂，并添加启发性的思考。",
+      "user_prompt_template": "请阅读并增强以下问答学习卡片：\n\n【问题 (Front)】:\n{front_text}\n\n【答案原始内容 (Back Original)】:\n{back_text}\n\n请基于背面的原始答案进行扩展和深化。输出格式要求：\n\n【答案要点】\n（给出简明扼要的答案，保持原有答案的核心）\n\n【详细解析】\n（逐步解释推理过程、中间步骤、关键思路）\n\n【举例说明】\n（用具体例子帮助理解，如果是数学题，展示计算过程）\n\n【常见误区】\n（指出容易犯错的地方，提醒注意事项）\n\n【相关知识】\n（延伸知识点、预备知识、相关概念）\n\n【思考拓展】\n（更有深度的思考题或变式问题）\n\n请直接输出增强后的完整背面内容（纯文本，不要JSON，不要markdown代码块），层次分明。",
+      "output_format": "text",
+      "input_fields": ["front_text", "back_text"],
+      "output_fields": ["front_text", "enhanced_back"]
+    }
+  }
+}

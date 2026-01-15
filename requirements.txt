@@ -1,0 +1,16 @@
+# Anki Assistant - Python Dependencies
+# 安装: pip install -r requirements.txt
+
+# AI 服务商 SDK
+google-generativeai>=0.3.0
+openai>=1.0.0
+
+# 数据处理
+pandas>=2.0.0
+openpyxl>=3.0.0
+
+# 进度显示
+tqdm>=4.65.0
+
+# HTTP 请求
+requests>=2.28.0

@@ -1,0 +1,18 @@
+{
+  "provider": "qiniu",
+  "gemini": {
+    "api_key": "你的_GOOGLE_API_KEY",
+    "model": "gemini-pro"
+  },
+  "qiniu": {
+    "api_key": "sk-b915f8b9d5312eec7ae5128987f7d76bfa5f96b172a670e9898def93a51bf8b8",
+    "base_url": "https://api.qnaigc.com/v1",
+    "model": "deepseek-v3"
+  },
+  "request_delay": 1.0,
+  "max_retries": 3,
+  "save_interval": 10,
+  "output_filename": "anki_cards.txt",
+  "cache_filename": "progress_cache.csv",
+  "log_file": "anki_process.log"
+}
