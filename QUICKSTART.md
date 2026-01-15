@@ -15,7 +15,7 @@
 ### 1. 克隆或下载项目
 
 ```bash
-git clone https://github.com/yourusername/anki-assistant.git
+git clone https://github.com/goodniuniu/anki-assistant.git
 cd anki-assistant
 ```
 
@@ -158,9 +158,9 @@ A: 支持 .txt、.csv、.xlsx 格式。默认使用 Tab 分隔的两列格式（
 
 ## 获取帮助
 
-- 提交 [Issue](https://github.com/yourusername/anki-assistant/issues)
+- 提交 [Issue](https://github.com/goodniuniu/anki-assistant/issues)
 - 查看 [文档](docs/)
-- 加入 [Discussions](https://github.com/yourusername/anki-assistant/discussions)
+- 加入 [Discussions](https://github.com/goodniuniu/anki-assistant/discussions)
 
 ---
 

@@ -83,7 +83,7 @@
 请搜索并替换以下内容：
 
 ```markdown
-yourusername/anki-assistant
+goodniuniu/anki-assistant
 ```
 
 替换为您的实际 GitHub 用户名和仓库名。

@@ -5,8 +5,8 @@
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-4.0-orange)](CHANGELOG.md)
-[![GitHub issues](https://img.shields.io/github/issues/yourusername/anki-assistant)](https://github.com/yourusername/anki-assistant/issues)
-[![GitHub stars](https://img.shields.io/github/stars/yourusername/anki-assistant)](https://github.com/yourusername/anki-assistant)
+[![GitHub issues](https://img.shields.io/github/issues/goodniuniu/anki-assistant)](https://github.com/goodniuniu/anki-assistant/issues)
+[![GitHub stars](https://img.shields.io/github/stars/goodniuniu/anki-assistant)](https://github.com/goodniuniu/anki-assistant)
 
 ## 📖 项目简介
 
@@ -217,8 +217,8 @@ python src/anki_enhancer.py \
 欢迎贡献代码、报告问题或提出建议！
 
 - 查看 [CONTRIBUTING.md](CONTRIBUTING.md) 了解贡献指南
-- 提交 [Issue](https://github.com/yourusername/anki-assistant/issues) 报告问题
-- 创建 [Pull Request](https://github.com/yourusername/anki-assistant/pulls) 贡献代码
+- 提交 [Issue](https://github.com/goodniuniu/anki-assistant/issues) 报告问题
+- 创建 [Pull Request](https://github.com/goodniuniu/anki-assistant/pulls) 贡献代码
 
 ## ⭐ Star History
 
@@ -226,8 +226,8 @@ python src/anki_enhancer.py \
 
 ## 📮 联系方式
 
-- Issues: [GitHub Issues](https://github.com/yourusername/anki-assistant/issues)
-- Discussions: [GitHub Discussions](https://github.com/yourusername/anki-assistant/discussions)
+- Issues: [GitHub Issues](https://github.com/goodniuniu/anki-assistant/issues)
+- Discussions: [GitHub Discussions](https://github.com/goodniuniu/anki-assistant/discussions)
 
 ## 📄 许可证
 

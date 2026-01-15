@@ -8,7 +8,7 @@
 
 如果您发现了 Bug 或有功能建议：
 
-1. 检查 [Issues](https://github.com/yourusername/anki-assistant/issues) 是否已有相同问题
+1. 检查 [Issues](https://github.com/goodniuniu/anki-assistant/issues) 是否已有相同问题
 2. 如果没有，创建新的 Issue，使用相应的模板：
    - Bug 反馈
    - 功能建议
@@ -21,7 +21,7 @@
 1. Fork 项目仓库
 2. Clone 您的 Fork：
    ```bash
-   git clone https://github.com/yourusername/anki-assistant.git
+   git clone https://github.com/goodniuniu/anki-assistant.git
    cd anki-assistant
    ```
 
@@ -161,8 +161,8 @@ class YourProvider(AIProvider):
 
 ## 📧 联系方式
 
-- Issues: [GitHub Issues](https://github.com/yourusername/anki-assistant/issues)
-- Discussions: [GitHub Discussions](https://github.com/yourusername/anki-assistant/discussions)
+- Issues: [GitHub Issues](https://github.com/goodniuniu/anki-assistant/issues)
+- Discussions: [GitHub Discussions](https://github.com/goodniuniu/anki-assistant/discussions)
 
 ## 📄 行为准则
 
